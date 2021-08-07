@@ -108,7 +108,7 @@ export class GenericTodoStore {
             data[inputElem.name] = value;
             return data;
         }, {});
-        const data = Object.assign(this.currentItem, this.listConfig.beforeFormSubmit(formData));
+        const data = this.listConfig.beforeFormSubmit(formData);
         event.target.reset();
         if (data.id) {
             this.update(data);

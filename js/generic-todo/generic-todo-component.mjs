@@ -43,7 +43,11 @@ export class GenericTodoComponent extends BaseComponent {
 
     renderSortBy = () => {
         const options = this.listConfig.components.map(component => {
-             return { tagName: 'option', attribtues: component.attributes, children: [component.id]}
+            const optionAttributes = {value: component.id};
+            const [currentid, ...rest] = this.store.currentSort;
+            if(currentid === component.id)
+                optionAttributes.selected = true;
+            return { tagName: 'option', attributes: optionAttributes, children: [component.id]}
         }); 
 
         const attributes = { className: 'sortable' };
@@ -55,15 +59,63 @@ export class GenericTodoComponent extends BaseComponent {
 
         return { 
             tagName: 'div', 
-            attribtues: { className: 'sort-container' }, 
+            attributes: { className: 'sort-container' }, 
             children: [label, select]
         };
     }
 
+    renderForm = () => {
+        const item = this.store.currentItem;
+        const { formFields } = this.listConfig;
+
+        const children = [
+            { tagName: 'h2', children: ['Add Form'] }
+        ];
+
+        formFields.forEach(fieldAttributes => {
+            let value = '';
+            if (fieldAttributes.type === 'datetime-local' && typeof value === 'string') {
+                value = value.substr(0, 16);
+            }
+            const inputCombo = [
+                { tagName: 'input', attributes: {...fieldAttributes, value: value } }
+            ]
+
+            if (fieldAttributes.type === 'checkbox') {
+                inputCombo.push({ tagName: 'label', children: [fieldAttributes.name] });
+            } 
+            children.push({tagName: 'div', attributes: {className: 'input-container'}, children: inputCombo});
+        });
+
+        const buttons = [
+            { 
+                tagName: 'button', 
+                attributes: { className: 'button', onclick: () => this.store.setCurrentItem(null) }, 
+                children: ['Cancel'] 
+            },
+            { 
+                tagName: 'input',  
+                attributes: { value: 'Save', type: 'submit' } 
+            }
+        ]
+
+        children.push(
+            {tagName: 'div', attributes: {className: 'button-container'}, children: buttons}
+        );
+
+        const form = { 
+            tagName: 'form', 
+            attributes: { onsubmit: this.store.onSubmit }, 
+            children
+        };
+
+        return { tagName: 'div', attributes: { className: 'add-edit-form' }, children: [form] }; 
+    }
+
     render() {
         const children = [
+            this.renderForm(),
             this.renderSortBy(),
-            //this.renderHeadRow(),
             // this.renderAddButton(),
             this.renderList()
         ];

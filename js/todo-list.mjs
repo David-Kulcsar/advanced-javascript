@@ -17,8 +17,12 @@ function init() {
         model: Task,
         endpoint: 'https://60fd9bcc1fa9e90017c70f18.mockapi.io/api/todos/',
         attributes: {},
+        formFields: [
+            { placeholder: 'title', name: 'title', type: 'text', required: true }, 
+            { placeholder: 'Due Date', name: 'dueDate', type: 'datetime-local', required: true },
+            { placeholder: 'isDone', name: 'isDone', type: 'checkbox', required: false }, 
+        ],
         beforeFormSubmit: (data) => {
-            data.id = 
             data.createdAt = new Date();
             return data;
         },
